@@ -15,7 +15,7 @@
  */
 function signUp($email, $password, $lastName, $firstName){
   $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-  require_once 'config/connect.php';
+  require 'config/connect.php';
   $stmt = $pdo->prepare('INSERT INTO users (email_user, password_hash_user, last_name_user, first_name_user, role_user) VALUES (:email, :pass, :lastname, :firstname, "membre")');
   $stmt->execute([
     "email" => $email,
@@ -25,4 +25,18 @@ function signUp($email, $password, $lastName, $firstName){
   ]);
 
   return $stmt->rowCount();
+}
+
+/**
+ * Checks if a user with the specified email already exists in the database.
+ *
+ * @param string $email The email address to check for existence.
+ * @return bool Returns true if a user with the given email exists, false otherwise.
+ */
+function verifyExistingUser($email){
+  require 'config/connect.php';
+  $stmt = $pdo->prepare('SELECT * FROM users WHERE email_user = :email');
+  $stmt->execute(["email" => $email]);
+
+  return ($stmt->rowCount() >= 1) ? true : false;
 }
